@@ -35,12 +35,12 @@ The three-tier evaluation checks whether the skill:
 
 | Measure | Claude Code (Baseline → Skill Uplift) | Codex (Baseline → Skill Uplift) |
 |---|---:|---:|
-| Overall | 94.8% — baseline ran, but no comparable score was available; uplift unavailable | 91.9% — baseline ran, but no comparable score was available; uplift unavailable |
+| Overall | 95.2% — baseline ran, but no comparable score was available; uplift unavailable | 92.7% — baseline ran, but no comparable score was available; uplift unavailable |
 | Security | 100.0% → 100.0% (±0.0 points) | 100.0% → 100.0% (±0.0 points) |
-| Correctness | 70.0% → 100.0% (+30.0 points) | 60.0% → 95.0% (+35.0 points) |
-| Discoverability | 100.0% — baseline ran, but no comparable score was available; uplift unavailable | 90.0% — baseline ran, but no comparable score was available; uplift unavailable |
-| Effectiveness | 65.6% → 96.9% (+31.3 points) | 65.0% → 83.8% (+18.8 points) |
-| Efficiency | 77.1% — baseline ran, but no comparable score was available; uplift unavailable | 90.6% — baseline ran, but no comparable score was available; uplift unavailable |
+| Correctness | 85.0% → 100.0% (+15.0 points) | 80.0% → 100.0% (+20.0 points) |
+| Discoverability | 100.0% — baseline ran, but no comparable score was available; uplift unavailable | 86.7% — baseline ran, but no comparable score was available; uplift unavailable |
+| Effectiveness | 74.4% → 99.4% (+25.0 points) | 62.1% → 86.3% (+24.2 points) |
+| Efficiency | 76.5% — baseline ran, but no comparable score was available; uplift unavailable | 90.4% — baseline ran, but no comparable score was available; uplift unavailable |
 
 **How to read this table:** baseline is the same task attempted without the target skill. Scores are rounded to one decimal; threshold-adjacent values use additional precision so their displayed band matches the verdict. Uplift is derived from those displayed scores and shown in percentage points.
 
@@ -54,17 +54,17 @@ Actual Tier 3 execution usage is reported for every observed agent/case pair and
 
 | Agent | Dataset case | With skill | Without skill | Delta | Change | Coverage |
 |---|---|---:|---:|---:|---:|---|
-| claude-code | All cases | 490,442 | 443,462 | +46,980 | +10.59% | skill 4/4; base 4/4 |
-| claude-code | setup-context-engine-shape | 213,138 | 142,741 | +70,397 | +49.32% | skill 1/1; base 1/1 |
-| claude-code | setup-explicit-os-floor | 97,848 | 130,867 | -33,019 | -25.23% | skill 1/1; base 1/1 |
-| claude-code | setup-implicit-repair | 148,815 | 139,318 | +9,497 | +6.82% | skill 1/1; base 1/1 |
-| claude-code | setup-negative-dataset-results | 30,641 | 30,536 | +105 | +0.34% | skill 1/1; base 1/1 |
-| codex | All cases | 252,681 | 250,582 | +2,099 | +0.84% | skill 4/4; base 4/4 |
-| codex | setup-context-engine-shape | 81,787 | 60,145 | +21,642 | +35.98% | skill 1/1; base 1/1 |
-| codex | setup-explicit-os-floor | 44,857 | 57,148 | -12,291 | -21.51% | skill 1/1; base 1/1 |
-| codex | setup-implicit-repair | 112,223 | 119,539 | -7,316 | -6.12% | skill 1/1; base 1/1 |
-| codex | setup-negative-dataset-results | 13,814 | 13,750 | +64 | +0.47% | skill 1/1; base 1/1 |
-| ALL AGENTS | Dataset aggregate | 743,123 | 694,044 | +49,079 | +7.07% | skill 8/8; base 8/8 |
+| claude-code | All cases | 597,942 | 379,728 | +218,214 | +57.47% | skill 4/4; base 4/4 |
+| claude-code | setup-context-engine-shape | 190,170 | 145,461 | +44,709 | +30.74% | skill 1/1; base 1/1 |
+| claude-code | setup-explicit-os-floor | 97,439 | 97,282 | +157 | +0.16% | skill 1/1; base 1/1 |
+| claude-code | setup-implicit-repair | 279,618 | 106,036 | +173,582 | +163.70% | skill 1/1; base 1/1 |
+| claude-code | setup-negative-dataset-results | 30,715 | 30,949 | -234 | -0.76% | skill 1/1; base 1/1 |
+| codex | All cases | 276,000 | 261,531 | +14,469 | +5.53% | skill 4/4; base 4/4 |
+| codex | setup-context-engine-shape | 81,772 | 88,279 | -6,507 | -7.37% | skill 1/1; base 1/1 |
+| codex | setup-explicit-os-floor | 76,845 | 101,292 | -24,447 | -24.14% | skill 1/1; base 1/1 |
+| codex | setup-implicit-repair | 103,490 | 58,226 | +45,264 | +77.74% | skill 1/1; base 1/1 |
+| codex | setup-negative-dataset-results | 13,893 | 13,734 | +159 | +1.16% | skill 1/1; base 1/1 |
+| ALL AGENTS | Dataset aggregate | 873,942 | 641,259 | +232,683 | +36.29% | skill 8/8; base 8/8 |
 
 Prompt tokens include cached reads, so total tokens are `prompt + completion` (cached is not added twice). The Efficiency score uses `(prompt - cached) + completion`. N/A means the relevant trajectory counters were not available; coverage is never estimated.
 
@@ -82,7 +82,7 @@ Prompt tokens include cached reads, so total tokens are `prompt + completion` (c
 <summary>Show detailed findings and successful checks</summary>
 
 - **MEDIUM** QUALITY/quality_correctness: SKILL_SPEC recommended field missing: 'metadata.tags' (`skills/foundationpose-setup/SKILL.md`)
-- **MEDIUM** SECURITY/Unknown (RP1): MCP Rug Pull: The command `docker run --rm --gpus=all ubuntu:24.04 nvidia-smi` references the `ubuntu:24.04` image using a floating tag (`references/installation.md:17`)
+- **MEDIUM** SECURITY/Unknown (RP1): MCP Rug Pull: The command `docker run --rm --gpus=all ubuntu:24.04 nvidia-smi` uses `ubuntu:24.04` without a digest (SHA256 pinned ref (`references/installation.md:17`)
 - **LOW** QUALITY/quality_discoverability: Description very long (214 chars, recommend 50-150) (`skills/foundationpose-setup/SKILL.md`)
 
 </details>
