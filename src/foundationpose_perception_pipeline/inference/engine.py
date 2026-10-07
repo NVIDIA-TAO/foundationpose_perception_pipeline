@@ -177,6 +177,11 @@ class PoseEstimator:
         proposal set is then identical to the raw one and re-posing it would be pure cost.
         """
         estimator = self._acquire(target, depth_image_size)
+        rgb_image_size = (
+            (int(image.shape[1]), int(image.shape[0]))
+            if isinstance(image, np.ndarray)
+            else image.size
+        )
         raw_filter_results = self._run_foundationpose(
             estimator=estimator,
             target=target,
@@ -185,7 +190,7 @@ class PoseEstimator:
             depth_result=depth_result,
             pose_image_np=pose_image_np,
             depth_image_size=depth_image_size,
-            rgb_image_size=image.size,
+            rgb_image_size=rgb_image_size,
             n_refine=config.pose.n_refine,
             n_hypotheses=config.pose.n_hypotheses,
         )
@@ -220,7 +225,7 @@ class PoseEstimator:
                 depth_result=depth_result,
                 pose_image_np=pose_image_np,
                 depth_image_size=depth_image_size,
-                rgb_image_size=image.size,
+                rgb_image_size=rgb_image_size,
                 n_refine=config.pose.n_refine,
                 n_hypotheses=config.pose.n_hypotheses,
             )
