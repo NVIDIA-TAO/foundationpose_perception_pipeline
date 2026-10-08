@@ -48,10 +48,18 @@ def apply_mask_nms_with_indices(
         keep.append(index)
     return keep, boxes[keep], masks[keep], scores[keep]
 
+def _image_size(image: Image.Image | np.ndarray) -> tuple[int, int]:
+    """Return (width, height) for a PIL Image or an (H, W, ...) numpy array."""
+    if isinstance(image, np.ndarray):
+        height, width = image.shape[:2]
+        return int(width), int(height)
+    return image.size
+
+
 def best_refined_candidate(
     *,
     processor: Any,  # Sam3Processor; untyped to keep sam3 out of this module's imports
-    image: Image.Image,
+    image: Image.Image | np.ndarray,
     base_text_state: dict[str, Any],
     render_box_xyxy: list[float],
     rendered_mask: np.ndarray,
@@ -63,7 +71,7 @@ def best_refined_candidate(
         "backbone_out": base_text_state["backbone_out"],
     }
     state = processor.add_geometric_prompt(
-        box=xyxy_to_norm_cxcywh(render_box_xyxy, image.size),
+        box=xyxy_to_norm_cxcywh(render_box_xyxy, _image_size(image)),
         label=True,
         state=state,
     )
@@ -89,7 +97,7 @@ def apply_sam3_refinement(
     *,
     config: RefinementConfig,
     processor: Any,  # Sam3Processor; untyped to keep sam3 out of this module's imports
-    image: Image.Image,
+    image: Image.Image | np.ndarray,
     target: Target,
     camera_matrix_rgb: np.ndarray,
     raw_boxes: np.ndarray,
@@ -123,6 +131,7 @@ def apply_sam3_refinement(
     if config.policy != REPLACE_MID_NMS06_REFINEMENT_POLICY:
         raise ValueError(f"Unsupported SAM3 refinement policy: {config.policy}")
 
+    image_size = _image_size(image)
     refined_variants: list[dict[str, Any] | None] = [None] * len(raw_masks)
     candidate_rows: list[dict[str, Any]] = []
     for pose_row in raw_filter_results:
@@ -144,7 +153,7 @@ def apply_sam3_refinement(
             target.obj_id,
             pose_row_major_np,
             camera_matrix_rgb.astype(np.float32),
-            image.size,
+            image_size,
         )
         candidate_row["eligible"] = True
         refined = best_refined_candidate(
